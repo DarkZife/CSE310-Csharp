@@ -55,7 +55,7 @@ class TicTacToe
     static void DisplayBoard()
     {
         //from above this is where we set up the player board and the look of it.
-        Console.Clear();
+        Console.Clear();   //I can't figure out why this section right here doesn't like working when debugging.
         Console.WriteLine("Tic-Tac-Toe");
         Console.WriteLine($"Player 1 (X)  -  Player 2 (O)\n");
 
