@@ -1,109 +1,96 @@
 using System;
+using System.Threading;
 
-class Program
-{
+class TicTacToe
+{//This will start the set up for the board and start the current player as 1(when changed to 2 thats when next player plays)
     static char[] board = { '1', '2', '3', '4', '5', '6', '7', '8', '9' };
-    static int playerTurn = 1; // Player 1 starts
+    static int currentPlayer = 1; 
 
     static void Main()
     {
-        int choice;
-        bool validInput;
+
+        int playerChoice;
+        bool validInput = false;
+        bool gameover = false;
 
         do
         {
-            Console.Clear(); // Clear the console on each iteration
-            DrawBoard();
+            //In this do while, it will set up and display the game board, Ask the current player to pick a number 1-9 according to the board.
+            DisplayBoard();
 
-            validInput = int.TryParse(Console.ReadLine(), out choice);
+            // Get the current player's move
+            Console.WriteLine($"Player {currentPlayer}, enter your choice (1-9):");
+            validInput = int.TryParse(Console.ReadLine(), out playerChoice);
 
-            if (validInput)
+            if (validInput && playerChoice >= 1 && playerChoice <= 9 && board[playerChoice - 1] != 'X' && board[playerChoice - 1] != 'O')
             {
-                if (choice >= 1 && choice <= 9 && board[choice - 1] != 'X' && board[choice - 1] != 'O')
+                //This is to plugin the X's and O's for what the player chooses
+                board[playerChoice - 1] = (currentPlayer == 1) ? 'X' : 'O';
+
+                /* This next if else section will check if someone has won, or if its a draw. calling on CheckForWin and CheckForDraw.
+                After checking for a win or draw, it will write a display message for either one.*/
+                if (CheckForWin() || CheckForDraw())
                 {
-                    char playerSymbol = (playerTurn % 2 == 0) ? 'O' : 'X';
-                    board[choice - 1] = playerSymbol;
-                    playerTurn++;
+                    
+                    DisplayBoard();
+                    if (CheckForWin())
+                        Console.WriteLine($"Player {currentPlayer} wins!");
+                    else
+                        Console.WriteLine("It's a draw!");
+                    gameover = true;
                 }
-                else
-                {
-                    Console.WriteLine("Invalid move! Please try again.");
-                    Console.ReadLine();
-                }
+
+                // This will update to the new player, after one has gone.
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
             }
             else
             {
-                Console.WriteLine("Invalid input! Please enter a number between 1 and 9.");
-                Console.ReadLine();
+                //Response for entering in a bad input.
+                Console.WriteLine("Invalid input. Please try again.");
             }
 
-        } while (!CheckForWin() && !IsBoardFull());
-
-        Console.Clear();
-        DrawBoard();
-        if (IsBoardFull() && !CheckForWin())
-        {
-            Console.WriteLine("It's a draw!");
-        }
-        else
-        {
-            int winner = (playerTurn % 2 == 0) ? 1 : 2;
-            Console.WriteLine($"Player {winner} wins!");
-        }
-
-        Console.ReadLine();
+        } while (!gameover);
     }
 
-    static void DrawBoard()
+    static void DisplayBoard()
     {
-        Console.WriteLine("   |   |   ");
-        Console.WriteLine($" {board[0]} | {board[1]} | {board[2]} ");
-        Console.WriteLine("---|---|---");
-        Console.WriteLine($" {board[3]} | {board[4]} | {board[5]} ");
-        Console.WriteLine("---|---|---");
-        Console.WriteLine($" {board[6]} | {board[7]} | {board[8]} ");
-        Console.WriteLine("   |   |   ");
+        //from above this is where we set up the player board and the look of it.
+        Console.Clear();
+        Console.WriteLine("Tic-Tac-Toe");
+        Console.WriteLine($"Player 1 (X)  -  Player 2 (O)\n");
+
+        Console.WriteLine($"     |     |      ");
+        Console.WriteLine($"  {board[0]}  |  {board[1]}  |  {board[2]}  ");
+        Console.WriteLine($"_____|_____|_____ ");
+        Console.WriteLine($"     |     |      ");
+        Console.WriteLine($"  {board[3]}  |  {board[4]}  |  {board[5]}  ");
+        Console.WriteLine($"_____|_____|_____ ");
+        Console.WriteLine($"     |     |      ");
+        Console.WriteLine($"  {board[6]}  |  {board[7]}  |  {board[8]}  ");
+        Console.WriteLine($"     |     |      ");
     }
 
     static bool CheckForWin()
     {
-        for (int i = 0; i < 8; i += 3)
-        {
-            if (board[i] == board[i + 1] && board[i + 1] == board[i + 2])
-            {
-                return true;
-            }
-        }
-
-        for (int i = 0; i < 3; i++)
-        {
-            if (board[i] == board[i + 3] && board[i + 3] == board[i + 6])
-            {
-                return true;
-            }
-        }
-
-        if (board[0] == board[4] && board[4] == board[8])
-        {
-            return true;
-        }
-
-        if (board[2] == board[4] && board[4] == board[6])
-        {
-            return true;
-        }
-
-        return false;
+        // Win checking for a win, we got to see if any three line up.
+        return
+            (board[0] == board[1] && board[1] == board[2]) ||
+            (board[3] == board[4] && board[4] == board[5]) ||
+            (board[6] == board[7] && board[7] == board[8]) ||
+            (board[0] == board[3] && board[3] == board[6]) ||
+            (board[1] == board[4] && board[4] == board[7]) ||
+            (board[2] == board[5] && board[5] == board[8]) ||
+            (board[0] == board[4] && board[4] == board[8]) ||
+            (board[2] == board[4] && board[4] == board[6]);
     }
 
-    static bool IsBoardFull()
+    static bool CheckForDraw()
     {
+        // This will just check to see if the board is full.
         foreach (char c in board)
         {
             if (c != 'X' && c != 'O')
-            {
                 return false;
-            }
         }
         return true;
     }
