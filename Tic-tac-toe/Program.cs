@@ -1,5 +1,5 @@
 using System;
-using System.Threading;
+
 
 class TicTacToe
 {//This will start the set up for the board and start the current player as 1(when changed to 2 thats when next player plays)
